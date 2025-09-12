@@ -5,7 +5,7 @@ import { getRandomLevelFn } from '../../utils/methods/random.level';
 import { LEVELS } from '../../utils/constants/levels';
 import { MatButtonModule } from '@angular/material/button';
 
-type SudokuStatus = 'solved' | 'unsolved';
+type SudokuStatus = 'solved' | 'broken' | 'unsolved';
 
 @Component({
     selector: 'app-sudoku-play',
