@@ -1,1 +1,1 @@
-export const SUDOKU_API = 'https://sugoku.onrender.com/board';
+export const SUDOKU_API = 'https://sugoku.onrender.com/';

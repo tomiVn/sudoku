@@ -17,3 +17,15 @@
     outline: none;
     box-sizing: border-box;
 }
+
+.custom-width{
+  
+    width: 100%;
+}
+
+@media (min-width: 600px) {
+    .custom-width{
+
+        max-width: 230px;
+    }
+}

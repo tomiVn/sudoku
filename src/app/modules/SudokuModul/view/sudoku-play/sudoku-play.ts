@@ -1,9 +1,11 @@
-import { Component, inject, type OnDestroy, type OnInit } from '@angular/core';
+import { Component, inject, type AfterViewInit, type OnDestroy, type OnInit } from '@angular/core';
 import { SudokuService } from '../../services/sudoku-service';
-import { takeWhile, tap } from 'rxjs';
+import { of, takeWhile, tap, catchError } from 'rxjs';
 import { getRandomLevelFn } from '../../utils/methods/random.level';
 import { LEVELS } from '../../utils/constants/levels';
 import { MatButtonModule } from '@angular/material/button';
+
+type SudokuStatus = 'solved' | 'unsolved';
 
 @Component({
     selector: 'app-sudoku-play',
@@ -17,13 +19,14 @@ import { MatButtonModule } from '@angular/material/button';
          '../../../../css/border.css',
         '../../../../css/layout.css']
 })
-export class SudokuPlay implements OnInit, OnDestroy {
+export class SudokuPlay implements OnInit, OnDestroy{
     
     sudokuService = inject(SudokuService);
 
     currentLevel:   string       = '';
     dificultLevels: string[]     = LEVELS;
     isAlive:        boolean      = true;
+    status:         SudokuStatus = 'unsolved';
     board!:         number[][];
 
     ngOnInit(): void {
@@ -37,14 +40,56 @@ export class SudokuPlay implements OnInit, OnDestroy {
     
     ngOnDestroy   = () => this.isAlive = false;
 
+    solveAction(){
+        
+        this.sudokuService.getSolution(this.board)
+            .pipe(
+                takeWhile(() => this.isAlive),
+                tap((data: {status: SudokuStatus, solution: number[][]}) => {
+                    console.log('[GetSolution Success]', data)
+                    this.board   = data.solution;
+                    this.status  = 'solved';
+                }),
+                catchError((err: any)=>{
+                    console.log('[GetSolution Error]', err);
+                    return of([])
+                })
+            )
+            .subscribe();
+    }
+
+    testSolution(){
+
+        this.sudokuService.testSolution(this.board)
+            .pipe(
+                takeWhile(() => this.isAlive),
+                tap((res: {status: SudokuStatus}) => {
+                    console.log('[TestSolution Success]', res);
+                    this.status = res?.status;
+                }),
+                catchError((err: any)=>{
+                    console.log('[TestSolution Error]', err);
+                    return of([])
+                })
+            )
+            .subscribe();
+    }
+
     getData(endPoint: string | undefined){
 
         this.currentLevel = endPoint ? endPoint.toLowerCase() : getRandomLevelFn().toLowerCase();
-
         this.sudokuService.getOneWithQuery(this.currentLevel)
             .pipe(
                 takeWhile(() => this.isAlive),
-                tap((data: number[][]) => this.board = data)
+                tap((data: number[][]) => {
+                    console.log('[GetData Success]', data);
+                    this.board    = data;
+                    this.status   = 'unsolved';
+                }),
+                catchError((err: any)=>{
+                    console.log('[GetData Error]', err);
+                    return of([])
+                })
             )
             .subscribe();
     }

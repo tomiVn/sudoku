@@ -6,8 +6,22 @@
     flex-direction: row;
 }
 
+.fx-column{
+
+    flex-direction: column;
+}
+
+.medium-gap{
+
+    gap: 12px;
+}
+
 .fx-between{
     justify-content: space-between;
+}
+
+.fx-around{
+    justify-content: space-around;
 }
 
 .fx-center {

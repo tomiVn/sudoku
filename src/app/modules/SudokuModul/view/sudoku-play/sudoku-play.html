@@ -19,30 +19,46 @@
                         class="cell"
                         [value]="cell !== 0 ? cell : ''"
                         #cellInput
-                        
                         (change)="onInputChange(cellInput?.value, r, c)"
                     />
                 }
             }
-            
     </div>
 
-    <div class="fx fx-row fx-between fx-center fx-wrap">
+    <div class="fx fx-column medium-gap">
 
-        <h3>Generate: </h3>
+        <div class="fx fx-row fx-between fx-center fx-wrap medium-gap">
 
-        @for(level of dificultLevels; track level){
+            <h3>Generate: </h3>
+    
+            @for(level of dificultLevels; track level){
+    
+                <button (click)="getData(level)" class="txt-base-color custom-button">{{level}}</button>
+            }
+    
+            <button (click)="getData(undefined)" class="txt-base-color custom-button">Random</button>
+    
+            <button (click)="clearBoard()" class="txt-base-color custom-button solid-border-1px">Clear</button>
+        </div>
 
-            <button (click)="getData(level)" class="txt-base-color custom-button">{{level}}</button>
-        }
+        <div class="fx fx-row fx-between fx-wrap medium-gap">
 
-        <button (click)="getData(undefined)" class="txt-base-color custom-button">Random</button>
+            <div class="fx fx-row fx-around fx-wrap solid-border-1px border-radius custom-width medium-gap">
+                <button (click)="testSolution()" class="txt-base-color custom-button">Validate</button>
+                <p>{{status}}</p>
+            </div>
 
-        <button (click)="clearBoard()" class="txt-base-color custom-button solid-border-1px">Clear</button>
+            <div class="fx fx-row fx-around fx-wrap solid-border-1px border-radius custom-width medium-gap">
+                @if(currentLevel){
+    
+                    <p class="">{{currentLevel}}</p>
+                }
+                <button (click)="getData(undefined)" class="txt-base-color custom-button">Difficulty</button>
+            </div>
+        </div>
+
+        <button (click)="solveAction()" class="txt-base-color custom-button solid-border-1px border-radius">Solve</button>
+
     </div>
 
-    @if(currentLevel){
-
-        <p>{{currentLevel}}</p>
-    }
 </section>
