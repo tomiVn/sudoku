@@ -1,1 +1,35 @@
-<app-header [data]="gihubRepo"/>
+<section class="layout">
+
+    <header class="fx fx-row fx-between">
+
+        <h1 class="txt-secondary-color">suGOku</h1>
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Golang.png" alt="go go go" height="50">
+    </header>
+
+    <div class="grid-container">
+
+       
+            @for(row of board; track row; let r = $index){
+
+                @for(cell of row; track cell; let c = $index){
+                    
+                    <input 
+                        type="number" 
+                        maxlength="1"
+                        class="cell"
+                        [value]="cell !== 0 ? cell : ''"
+                        #cellInput
+                        
+                        (change)="onInputChange(cellInput?.value, r, c)"
+                    />
+                }
+            }
+            
+    </div>
+
+    @if(currentLevel){
+
+    <p>{{currentLevel}}</p>
+    }
+</section>

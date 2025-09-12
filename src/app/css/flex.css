@@ -1,0 +1,19 @@
+.fx{
+    display: flex;
+}
+
+.fx-row{
+    flex-direction: row;
+}
+
+.fx-between{
+    justify-content: space-between;
+}
+
+.fx-center {
+  align-items: center;
+}
+
+.fx-inline{
+    display: inline-flex;
+}

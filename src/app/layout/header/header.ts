@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import type { IHeader } from '../interfaces/header.interfaces';
+import { BERTOORT_SUDOKU_GITHUB } from '../../utils/urls/bertoort';
 
 @Component({
   selector: 'app-header',
@@ -14,5 +15,5 @@ import type { IHeader } from '../interfaces/header.interfaces';
 })
 export class Header {
 
-  @Input() data: IHeader | undefined;
+  bertoortSudokuGitHub = BERTOORT_SUDOKU_GITHUB;
 }
