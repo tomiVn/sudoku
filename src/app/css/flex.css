@@ -17,3 +17,7 @@
 .fx-inline{
     display: inline-flex;
 }
+
+.fx-wrap{
+    flex-wrap: wrap;
+}

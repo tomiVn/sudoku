@@ -9,7 +9,6 @@
 
     <div class="grid-container">
 
-       
             @for(row of board; track row; let r = $index){
 
                 @for(cell of row; track cell; let c = $index){
@@ -28,8 +27,22 @@
             
     </div>
 
+    <div class="fx fx-row fx-between fx-center fx-wrap">
+
+        <h3>Generate: </h3>
+
+        @for(level of dificultLevels; track level){
+
+            <button (click)="getData(level)" class="txt-base-color custom-button">{{level}}</button>
+        }
+
+        <button (click)="getData(undefined)" class="txt-base-color custom-button">Random</button>
+
+        <button (click)="clearBoard()" class="txt-base-color custom-button solid-border-1px">Clear</button>
+    </div>
+
     @if(currentLevel){
 
-    <p>{{currentLevel}}</p>
+        <p>{{currentLevel}}</p>
     }
 </section>
