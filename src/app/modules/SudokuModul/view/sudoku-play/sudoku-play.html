@@ -43,15 +43,15 @@
 
         <div class="fx fx-row fx-between fx-wrap medium-gap">
 
-            <div class="fx fx-row fx-around fx-wrap solid-border-1px border-radius custom-width medium-gap">
+            <div class="fx fx-row fx-around fx-center fx-wrap solid-border-1px border-radius custom-width medium-gap">
                 <button (click)="testSolution()" class="txt-base-color custom-button">Validate</button>
-                <p>{{status}}</p>
+                <p class="reset">{{status}}</p>
             </div>
 
-            <div class="fx fx-row fx-around fx-wrap solid-border-1px border-radius custom-width medium-gap">
+            <div class="fx fx-row fx-around fx-center fx-wrap solid-border-1px border-radius custom-width medium-gap">
                 @if(currentLevel){
     
-                    <p class="">{{currentLevel}}</p>
+                    <p class="reset">{{currentLevel}}</p>
                 }
                 <button (click)="getData(undefined)" class="txt-base-color custom-button">Difficulty</button>
             </div>

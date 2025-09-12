@@ -5,7 +5,7 @@
     width: min(90vw, 500px);
     aspect-ratio: 1/1;
     margin: auto;
-    border: 2px solid black;
+    /* border: 2px solid #444444; */
 }
 
 .cell {
@@ -13,14 +13,30 @@
     height: 100%;
     border: none;
     text-align: center;
-    font-size: 1.2rem;
-    outline: none;
+    font-size: 2rem;
     box-sizing: border-box;
+    color: #444444;
+    border: 1px solid #444444;
+}
+
+.cell:nth-child(3n) {
+  border-right: 2px solid #444444;
+}
+
+.cell:nth-child(n+19):nth-child(-n+27),
+.cell:nth-child(n+46):nth-child(-n+54),
+.cell:nth-child(n+73):nth-child(-n+81) {
+  border-bottom: 2px solid #444444;
 }
 
 .custom-width{
   
     width: 100%;
+}
+
+.reset{
+    margin: 0; 
+    padding: 0;
 }
 
 @media (min-width: 600px) {
