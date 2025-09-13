@@ -10,26 +10,32 @@
 
     </header>
 
-    <div class="grid-container">
+    @if(isLoading){
 
-            @for(row of board; track row; let r = $index){
+        <p>Loading...</p>
+    }@else{
 
-                @for(cell of row; track cell; let c = $index){
-                    
-                    <input 
-                        [type]="locked[r][c] ? 'text': 'number'" 
-                        [min]="1"
-                        [max]="9"
-                        [step]="1"
-                        class="cell"
-                        [value]="cell !== 0 ? cell : ''"
-                        [readonly]="locked[r][c]"
-                        #cellInput
-                        (input)="onInputChange(cellInput?.value, r, c)"
-                    />
+        <div class="grid-container">
+    
+                @for(row of board; track row; let r = $index){
+    
+                    @for(cell of row; track cell; let c = $index){
+                        
+                        <input 
+                            [type]="locked[r][c] ? 'text': 'number'" 
+                            [min]="1"
+                            [max]="9"
+                            [step]="1"
+                            class="cell"
+                            [value]="cell !== 0 ? cell : ''"
+                            [readonly]="locked[r][c]"
+                            #cellInput
+                            (input)="onInputChange(cellInput?.value, r, c)"
+                        />
+                    }
                 }
-            }
-    </div>
+        </div>
+    }
 
     <div class="fx fx-column medium-gap">
 

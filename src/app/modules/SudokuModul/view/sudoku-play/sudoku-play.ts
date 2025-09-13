@@ -33,6 +33,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
     status:         SudokuStatus = 'unsolved';
     board!:         number[][];
     locked!:        boolean[][];
+    isLoading:      boolean      = false;
 
     ngOnInit(): void {
 
@@ -53,18 +54,20 @@ export class SudokuPlay implements OnInit, OnDestroy{
     ngOnDestroy   = () => this.isAlive = false;
 
     solveAction(){
-        
+        this.isLoading = true;
         this.sudokuService.getSolution(this.board)
             .pipe(
                 takeWhile(() => this.isAlive),
                 tap((data: {status: SudokuStatus, solution: number[][]}) => {
                     console.log('[GetSolution Success]', data)
-                    this.board   = data?.solution;
-                    this.locked  = getLockedFn(data?.solution)
-                    this.status  = 'solved';
+                    this.board     = data?.solution;
+                    this.locked    = getLockedFn(data?.solution)
+                    this.status    = 'solved';
+                    this.isLoading = false;
                 }),
                 catchError((err: any)=>{
                     console.log('[GetSolution Error]', err);
+                    this.isLoading = false;
                     return of([])
                 })
             )
@@ -89,7 +92,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
     }
 
     getData(endPoint: string | undefined){
-
+        this.isLoading    = true;
         this.currentLevel = endPoint ? endPoint.toLowerCase() : getRandomLevelFn().toLowerCase();
         this.sudokuService.getOneWithQuery(this.currentLevel)
             .pipe(
@@ -99,9 +102,11 @@ export class SudokuPlay implements OnInit, OnDestroy{
                     this.board     = data;
                     this.locked    = getLockedFn(data);
                     this.status    = 'unsolved';
+                    this.isLoading = false;
                 }),
                 catchError((err: any)=>{
                     console.log('[GetData Error]', err);
+                    this.isLoading = false;
                     return of([])
                 })
             )
