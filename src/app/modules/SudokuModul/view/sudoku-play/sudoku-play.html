@@ -4,7 +4,10 @@
 
         <h1 class="txt-secondary-color">suGOku</h1>
 
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Golang.png" alt="go go go" height="50">
+        <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/2/23/Golang.png" 
+            alt="go go go" height="50">
+
     </header>
 
     <div class="grid-container">
@@ -15,11 +18,14 @@
                     
                     <input 
                         type="number" 
-                        maxlength="1"
+                        [min]="1"
+                        [max]="9"
+                        [step]="1"
                         class="cell"
                         [value]="cell !== 0 ? cell : ''"
+                        [readonly]="locked[r][c]"
                         #cellInput
-                        (change)="onInputChange(cellInput?.value, r, c)"
+                        (input)="onInputChange(cellInput?.value, r, c)"
                     />
                 }
             }
@@ -33,31 +39,56 @@
     
             @for(level of dificultLevels; track level){
     
-                <button (click)="getData(level)" class="txt-base-color custom-button">{{level}}</button>
+                <button (click)="getData(level)" 
+                    class="txt-base-color custom-button">
+                    {{level}}
+                </button>
             }
     
-            <button (click)="getData(undefined)" class="txt-base-color custom-button">Random</button>
+            <button (click)="getData(undefined)" 
+                class="txt-base-color custom-button">
+                    Random
+            </button>
     
-            <button (click)="clearBoard()" class="txt-base-color custom-button solid-border-1px">Clear</button>
+            <button (click)="clearBoard()" 
+                class="txt-base-color custom-button solid-border-1px">
+                    Clear
+            </button>
         </div>
 
         <div class="fx fx-row fx-between fx-wrap medium-gap">
 
-            <div class="fx fx-row fx-around fx-center fx-wrap solid-border-1px border-radius custom-width medium-gap">
-                <button (click)="testSolution()" class="txt-base-color custom-button">Validate</button>
-                <p class="reset">{{status}}</p>
+            <div 
+                class="fx fx-row fx-around fx-center fx-wrap solid-border-1px border-radius full-width medium-gap">
+               
+                <button (click)="testSolution()" 
+                    class="txt-base-color custom-button fx fx-row fx-center">
+                    <mat-icon fontIcon="check_small" class="icon-small"/>Validate
+                </button>
+
+                <p class="reset custom-width txt-center border-left">{{status}}</p>
             </div>
 
-            <div class="fx fx-row fx-around fx-center fx-wrap solid-border-1px border-radius custom-width medium-gap">
+            <div 
+                class="fx fx-row fx-around fx-center fx-wrap solid-border-1px border-radius full-width medium-gap">
+                
                 @if(currentLevel){
     
-                    <p class="reset">{{currentLevel}}</p>
+                    <p class="reset custom-width txt-center border-right">{{currentLevel}}</p>
                 }
-                <button (click)="getData(undefined)" class="txt-base-color custom-button">Difficulty</button>
+
+                <button (click)="getData(undefined)" 
+                    class="txt-base-color custom-button fx fx-row fx-center">
+
+                    <mat-icon fontIcon="school" class="icon-small"/>Difficulty
+                </button>
             </div>
         </div>
 
-        <button (click)="solveAction()" class="txt-base-color custom-button solid-border-1px border-radius">Solve</button>
+        <button (click)="solveAction()" 
+            class="txt-base-color custom-button solid-border-1px border-radius">
+                Solve
+        </button>
 
     </div>
 

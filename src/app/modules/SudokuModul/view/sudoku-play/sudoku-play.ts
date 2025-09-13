@@ -1,22 +1,26 @@
-import { Component, inject, type AfterViewInit, type OnDestroy, type OnInit } from '@angular/core';
+import { Component, inject, type OnDestroy, type OnInit } from '@angular/core';
 import { SudokuService } from '../../services/sudoku-service';
 import { of, takeWhile, tap, catchError } from 'rxjs';
 import { getRandomLevelFn } from '../../utils/methods/random.level';
 import { LEVELS } from '../../utils/constants/levels';
 import { MatButtonModule } from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import { getLockedFn } from '../../utils/methods/locked';
 
 type SudokuStatus = 'solved' | 'broken' | 'unsolved';
 
 @Component({
     selector: 'app-sudoku-play',
-    imports: [MatButtonModule],
+    imports: [MatButtonModule, MatIconModule],
     templateUrl: './sudoku-play.html',
     styleUrls: [
         './sudoku-play.css',
         '../../../../css/flex.css',
         '../../../../css/colors.css',
         '../../../../css/buttons.css',
-         '../../../../css/border.css',
+        '../../../../css/border.css',
+        '../../../../css/icons.css',
+        '../../../../css/text.css',
         '../../../../css/layout.css']
 })
 export class SudokuPlay implements OnInit, OnDestroy{
@@ -28,15 +32,22 @@ export class SudokuPlay implements OnInit, OnDestroy{
     isAlive:        boolean      = true;
     status:         SudokuStatus = 'unsolved';
     board!:         number[][];
+    locked!:        boolean[][];
 
     ngOnInit(): void {
 
         this.getData(undefined);
     }
 
-    onInputChange = (cellInput: string | undefined, r: number, c: number) => this.board[r][c] = Number(cellInput);
+    onInputChange = (cellInput: string | undefined, r: number, c: number) => 
+        this.board[r][c] = (Number(cellInput) >= 1 && Number(cellInput) <= 9) ? Number(cellInput) : this.board[r][c];
     
-    clearBoard    = () => this.board = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+    clearBoard    = () => {
+
+        this.board  = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+        this.locked = getLockedFn(this.board);
+    }
+        
     
     ngOnDestroy   = () => this.isAlive = false;
 
@@ -47,7 +58,8 @@ export class SudokuPlay implements OnInit, OnDestroy{
                 takeWhile(() => this.isAlive),
                 tap((data: {status: SudokuStatus, solution: number[][]}) => {
                     console.log('[GetSolution Success]', data)
-                    this.board   = data.solution;
+                    this.board   = data?.solution;
+                    this.locked  = getLockedFn(data?.solution)
                     this.status  = 'solved';
                 }),
                 catchError((err: any)=>{
@@ -83,8 +95,9 @@ export class SudokuPlay implements OnInit, OnDestroy{
                 takeWhile(() => this.isAlive),
                 tap((data: number[][]) => {
                     console.log('[GetData Success]', data);
-                    this.board    = data;
-                    this.status   = 'unsolved';
+                    this.board     = data;
+                    this.locked    = getLockedFn(data);
+                    this.status    = 'unsolved';
                 }),
                 catchError((err: any)=>{
                     console.log('[GetData Error]', err);
