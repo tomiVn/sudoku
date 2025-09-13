@@ -17,7 +17,7 @@
                 @for(cell of row; track cell; let c = $index){
                     
                     <input 
-                        type="number" 
+                        [type]="locked[r][c] ? 'text': 'number'" 
                         [min]="1"
                         [max]="9"
                         [step]="1"

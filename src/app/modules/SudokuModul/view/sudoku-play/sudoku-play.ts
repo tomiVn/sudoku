@@ -40,7 +40,8 @@ export class SudokuPlay implements OnInit, OnDestroy{
     }
 
     onInputChange = (cellInput: string | undefined, r: number, c: number) => 
-        this.board[r][c] = (Number(cellInput) >= 1 && Number(cellInput) <= 9) ? Number(cellInput) : this.board[r][c];
+        this.board[r][c] = (Number(cellInput) >= 1 && Number(cellInput) <= 9) && !this.locked[r][c]
+            ? Number(cellInput) : this.board[r][c];
     
     clearBoard    = () => {
 
