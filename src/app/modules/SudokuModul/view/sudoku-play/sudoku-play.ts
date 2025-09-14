@@ -1,13 +1,13 @@
 import { Component, inject, type OnDestroy, type OnInit } from '@angular/core';
 import { SudokuService } from '../../services/sudoku-service';
 import { of, takeWhile, tap, catchError } from 'rxjs';
-import { getRandomLevelFn } from '../../utils/methods/random.level';
 import { LEVELS } from '../../utils/constants/levels';
 import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { getLockedFn } from '../../utils/methods/locked';
+import type { IDificulty } from '../../interfaces/dificulty';
 
-type SudokuStatus = 'solved' | 'broken' | 'unsolved';
+export type SudokuStatus = 'solved' | 'broken' | 'unsolved';
 
 @Component({
     selector: 'app-sudoku-play',
@@ -37,7 +37,12 @@ export class SudokuPlay implements OnInit, OnDestroy{
 
     ngOnInit(): void {
 
-        this.getData(undefined);
+        this.getData('random');
+
+        if(this.board && this.board.length > 0){
+
+            this.setDificulty();
+        }
     }
 
     onInputChange = (cellInput: string | undefined, r: number, c: number) => 
@@ -50,8 +55,23 @@ export class SudokuPlay implements OnInit, OnDestroy{
         this.locked = getLockedFn(this.board);
     }
         
-    
-    ngOnDestroy   = () => this.isAlive = false;
+    setDificulty  = () => {
+
+        this.sudokuService.getGrade(this.board)
+            .pipe(
+                takeWhile(() => this.isAlive),
+                tap((res: IDificulty) => {
+                    console.log('[GetDificulty Success]', res);
+                    this.currentLevel = res?.difficulty
+                }),
+                catchError((err: any)=>{
+                    console.log('[GetDificulty Error]', err);
+                    alert('[GetDificulty Error] ' + err);
+                    return of([])
+                })
+            )
+            .subscribe();
+    }
 
     solveAction(){
         this.isLoading = true;
@@ -67,6 +87,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
                 }),
                 catchError((err: any)=>{
                     console.log('[GetSolution Error]', err);
+                    alert('[GetSolution Error] ' + err);
                     this.isLoading = false;
                     return of([])
                 })
@@ -85,16 +106,19 @@ export class SudokuPlay implements OnInit, OnDestroy{
                 }),
                 catchError((err: any)=>{
                     console.log('[TestSolution Error]', err);
+                    alert('[TestSolution Error] ' + err);
                     return of([])
                 })
             )
             .subscribe();
     }
 
-    getData(endPoint: string | undefined){
+    getData(endPoint: string){
+
+        console.log('[Input Dificulty]', endPoint.toLowerCase())
         this.isLoading    = true;
-        this.currentLevel = endPoint ? endPoint.toLowerCase() : getRandomLevelFn().toLowerCase();
-        this.sudokuService.getOneWithQuery(this.currentLevel)
+        //this.currentLevel = endPoint ? endPoint.toLowerCase() : getRandomLevelFn().toLowerCase();
+        this.sudokuService.getOneWithQuery(endPoint.toLowerCase())
             .pipe(
                 takeWhile(() => this.isAlive),
                 tap((data: number[][]) => {
@@ -103,6 +127,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
                     this.locked    = getLockedFn(data);
                     this.status    = 'unsolved';
                     this.isLoading = false;
+                    this.setDificulty();
                 }),
                 catchError((err: any)=>{
                     console.log('[GetData Error]', err);
@@ -112,4 +137,6 @@ export class SudokuPlay implements OnInit, OnDestroy{
             )
             .subscribe();
     }
+
+    ngOnDestroy   = () => this.isAlive = false;
 }

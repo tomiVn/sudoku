@@ -51,7 +51,7 @@
                 </button>
             }
     
-            <button (click)="getData(undefined)" 
+            <button (click)="getData('random')" 
                 class="txt-base-color custom-button">
                     Random
             </button>
@@ -83,7 +83,7 @@
                     <p class="reset custom-width txt-center border-right">{{currentLevel}}</p>
                 }
 
-                <button (click)="getData(undefined)" 
+                <button (click)="setDificulty()" 
                     class="txt-base-color custom-button fx fx-row fx-center">
 
                     <mat-icon fontIcon="school" class="icon-small"/>Difficulty
