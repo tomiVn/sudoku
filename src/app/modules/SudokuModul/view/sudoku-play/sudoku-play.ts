@@ -104,7 +104,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
                     console.log('[TestSolution Success]', res);
                     this.status = res?.status;
                 }),
-                catchError((err: any)=>{
+                catchError((err: any)=> {
                     console.log('[TestSolution Error]', err);
                     alert('[TestSolution Error] ' + err);
                     return of([])
@@ -131,6 +131,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
                 }),
                 catchError((err: any)=>{
                     console.log('[GetData Error]', err);
+                    alert('[GetData Error] ' + err);
                     this.isLoading = false;
                     return of([])
                 })
