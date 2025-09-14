@@ -2,8 +2,8 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { SudokuPlay, type SudokuStatus } from './sudoku-play';
 import { SudokuService } from '../../services/sudoku-service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { of } from 'rxjs';
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { getLockedFn } from '../../utils/methods/locked';
 
 describe('SudokuPlay', () => {
 
@@ -15,6 +15,7 @@ describe('SudokuPlay', () => {
     let currentLevel:      string           = '';   
     let status:            SudokuStatus     = 'unsolved';
     let board!:            number[][];
+    let testBoard:         number[][]       = Array.from({ length: 9 }, () => Array(9).fill(0));
     let locked!:           boolean[][];
     let isLoading:         boolean          = false;
 
@@ -23,7 +24,8 @@ describe('SudokuPlay', () => {
         await TestBed.configureTestingModule({
             imports:   [SudokuPlay],
             providers: [
-                provideHttpClient(),          
+        
+                provideHttpClient(withFetch(), withInterceptorsFromDi()),
                 provideHttpClientTesting(),
                 SudokuService           
             ]
@@ -42,7 +44,7 @@ describe('SudokuPlay', () => {
     });
 
 
-    it('SudokuService', () => {
+    it('sudokuService create', () => {
         expect(sudokuService).toBeTruthy();
     });
 
@@ -53,33 +55,86 @@ describe('SudokuPlay', () => {
         expect(compiled.querySelector('h1')?.textContent).toContain('suGOku');
     });
 
-    it('On Init', fakeAsync(() => {
+    it('OnInit', fakeAsync(() => {
   
         spyOn(component, 'getData').and.callFake(() => {
-          component.board = Array.from({ length: 9 }, () => Array(9).fill(0));
+          component.board = testBoard;
         });
 
         spyOn(component, 'setDificulty');
 
         component.ngOnInit();
+
         tick(60000);
+
         expect(component.getData).toHaveBeenCalledWith('random');
         expect(component.setDificulty).toHaveBeenCalled();
         expect(component.board.length).toBe(9);
     }));
 
-    it('Test setDificulty', fakeAsync(() => {
+    it('Test onInputChange Succes', (() => {
 
-        const mockResponse = { difficulty: 'medium' } as any;
+        component.board = testBoard;
+        component.locked = getLockedFn(testBoard);
+        component.onInputChange('5', 0, 0);
+        expect(component.board[0][0]).toBe(5);
+    }));
+
+    it('Test onInputChange negative value not Succes', (() => {
+
+        component.board = testBoard;
+        component.locked = getLockedFn(testBoard);
+        component.onInputChange('-1', 0, 0);
+        expect(component.board[0][0]).not.toBe(-1);
+    }));
+
+    it('Test onInputChange locked value not Succes', (() => {
+
+        component.board = Array.from({ length: 9 }, () => Array(9).fill(1));
+        component.locked = getLockedFn(component.board);
+        component.onInputChange('2', 0, 0);
+        expect(component.board[0][0]).not.toBe(2);
+    }));
+
+    it('Test clearBoard Succes', (() => {
+
+        component.board = Array.from({ length: 9 }, () => Array(9).fill(1));
+
+        component.clearBoard();
+
+        expect(component.board.every((row) => row.every((cell) => cell == 0))).toBeTrue();
+    }));
+
+    it('Test solveAction Success', fakeAsync(() => {
+
+       component.board = testBoard;
+
+        component.solveAction();
+
+        tick(60000);
+
+        expect(component.status).toContain('solved');
+    }));
+
+    it('Test testSolution Success', fakeAsync(() => {
+
+       component.board = testBoard;
+
+        component.testSolution();
+
+        tick(60000);
+
+        expect(['unsolved', 'solved']).toContain(component.status);
+    }));
+
+    it('Test sudokuService getGrade', (() => {
+
+        sudokuService.getGrade(testBoard).subscribe(res => {
+            expect(res).toBeTruthy();
+            expect(['easy', 'medium', 'hard']).toContain(component.currentLevel);
+        })
         
-        board  = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 1));
+    }));
+
     
-        component.setDificulty();
-
-        tick(60000); 
-
-        fixture.detectChanges();
-        expect(['easy', 'medium', 'hard']).toContain(component.currentLevel);
-  }));
-
 });

@@ -1,10 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { SudokuService } from './modules/SudokuModul/services/sudoku-service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        SudokuService
+      ]
     }).compileComponents();
   });
 
@@ -14,5 +22,5 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  
+
 });

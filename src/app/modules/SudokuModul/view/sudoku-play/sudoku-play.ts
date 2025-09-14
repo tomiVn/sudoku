@@ -27,7 +27,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
     
     sudokuService = inject(SudokuService);
 
-    currentLevel:   string       = '';
+    currentLevel:  string        = '';
     dificultLevels: string[]     = LEVELS;
     isAlive:        boolean      = true;
     status:         SudokuStatus = 'unsolved';
@@ -62,7 +62,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
                 takeWhile(() => this.isAlive),
                 tap((res: IDificulty) => {
                     console.log('[GetDificulty Success]', res);
-                    this.currentLevel = res?.difficulty
+                    this.currentLevel = res?.difficulty;
                 }),
                 catchError((err: any)=>{
                     console.log('[GetDificulty Error]', err);
@@ -115,10 +115,10 @@ export class SudokuPlay implements OnInit, OnDestroy{
 
     getData(endPoint: string){
 
-        console.log('[Input Dificulty]', endPoint.toLowerCase())
+        console.log('[Input Dificulty]', endPoint?.toLowerCase())
         this.isLoading    = true;
         //this.currentLevel = endPoint ? endPoint.toLowerCase() : getRandomLevelFn().toLowerCase();
-        this.sudokuService.getOneWithQuery(endPoint.toLowerCase())
+        this.sudokuService.getOneWithQuery(endPoint?.toLowerCase())
             .pipe(
                 takeWhile(() => this.isAlive),
                 tap((data: number[][]) => {
