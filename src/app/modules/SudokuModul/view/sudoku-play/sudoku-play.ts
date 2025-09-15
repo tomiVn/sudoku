@@ -27,7 +27,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
     
     sudokuService = inject(SudokuService);
 
-    currentLevel:  string        = '';
+    currentLevel:   string       = '';
     dificultLevels: string[]     = LEVELS;
     isAlive:        boolean      = true;
     status:         SudokuStatus = 'unsolved';
