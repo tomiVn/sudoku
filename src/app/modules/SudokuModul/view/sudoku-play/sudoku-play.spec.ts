@@ -4,6 +4,7 @@ import { SudokuService } from '../../services/sudoku-service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { getLockedFn } from '../../utils/methods/locked';
+import { of } from 'rxjs';
 
 describe('SudokuPlay', () => {
 
@@ -19,8 +20,11 @@ describe('SudokuPlay', () => {
     let locked!:           boolean[][];
     let isLoading:         boolean          = false;
 
-    beforeEach(async () => {
+    beforeAll(() => {
+        //jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000; // 2 minutes
+    });
 
+    beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports:   [SudokuPlay],
             providers: [
@@ -136,5 +140,30 @@ describe('SudokuPlay', () => {
         
     }));
 
-    
+    it('Test sudokuService setDificulty Success', (() => {
+        
+        component.board = testBoard;
+        
+        spyOn(component, 'setDificulty').and.callThrough();
+
+        component.setDificulty();
+
+        fixture.detectChanges();
+
+        expect(component.setDificulty).toHaveBeenCalled();
+    }));
+
+    it('Test sudokuService getData Success', (() => {
+
+        component.board = testBoard;
+
+        spyOn(component, 'getData').and.callThrough();
+
+        component.getData('random');
+
+        fixture.detectChanges();
+
+        expect(component.getData).toHaveBeenCalled();
+        
+    }));
 });
