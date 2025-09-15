@@ -1,0 +1,1 @@
+export const DIFFICULTY_LEVELS_ARRAY = ['easy', 'medium', 'hard'];

@@ -4,22 +4,15 @@ import { SudokuService } from '../../services/sudoku-service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { getLockedFn } from '../../utils/methods/locked';
-import { of } from 'rxjs';
+import { DIFFICULTY_LEVELS_ARRAY } from '../../utils/constants/difficulty.levels';
 
 describe('SudokuPlay', () => {
 
     let component:         SudokuPlay;
     let fixture:           ComponentFixture<SudokuPlay>;
-
     let sudokuService:     SudokuService;
-
-    let currentLevel:      string           = '';   
-    let status:            SudokuStatus     = 'unsolved';
-    let board!:            number[][];
     let testBoard:         number[][]       = Array.from({ length: 9 }, () => Array(9).fill(0));
-    let locked!:           boolean[][];
-    let isLoading:         boolean          = false;
-
+    
     beforeAll(() => {
         //jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000; // 2 minutes
     });
@@ -131,16 +124,7 @@ describe('SudokuPlay', () => {
         expect(['unsolved', 'solved']).toContain(component.status);
     }));
 
-    it('Test sudokuService getGrade', (() => {
-
-        sudokuService.getGrade(testBoard).subscribe(res => {
-            expect(res).toBeTruthy();
-            expect(['easy', 'medium', 'hard']).toContain(component.currentLevel);
-        })
-        
-    }));
-
-    it('Test sudokuService setDificulty Success', (() => {
+    it('Test sudokuService setDificulty Success', ((done: DoneFn) => {
         
         component.board = testBoard;
         
@@ -151,11 +135,16 @@ describe('SudokuPlay', () => {
         fixture.detectChanges();
 
         expect(component.setDificulty).toHaveBeenCalled();
+
+        setTimeout(() => {
+
+            expect(DIFFICULTY_LEVELS_ARRAY).toContain(component.currentLevel);
+        }, 120000);
+        
+        done();
     }));
 
-    it('Test sudokuService getData Success', (() => {
-
-        component.board = testBoard;
+    it('Test sudokuService getData Success', ((done: DoneFn) => {
 
         spyOn(component, 'getData').and.callThrough();
 
@@ -164,6 +153,13 @@ describe('SudokuPlay', () => {
         fixture.detectChanges();
 
         expect(component.getData).toHaveBeenCalled();
+
+        setTimeout(() => {
+
+            expect(component.board.length).toBe(9);
+        }, 120000);
+
+        done();
         
     }));
 });

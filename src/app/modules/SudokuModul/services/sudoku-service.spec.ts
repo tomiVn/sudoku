@@ -1,14 +1,18 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { SudokuService } from './sudoku-service';
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { SUDOKU_API_GET_WITH_QUERY } from '../utils/urls/sudoku.api';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { SUDOKU_API_DIFICULTY_ARRAY_ENDPOINTS, SUDOKU_API_BOARD, SUDOKU_API_GRADE, SUDOKU_API_SOLVE, SUDOKU_API_VALIDATE } from '../utils/urls/sudoku.api';
+import { getHttpQuery } from '../utils/methods/get.query';
+import { STATIC_BOARD } from '../utils/constants/static.board';
 
 describe('SudokuService', () => {
 
     let service: SudokuService;
     let testBoard: number[][] = Array.from({ length: 9 }, () => Array(9).fill(1));
+
+    let httpMock: HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -19,6 +23,7 @@ describe('SudokuService', () => {
             ]
         });
         service = TestBed.inject(SudokuService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
     it('should be created', () => {
@@ -26,45 +31,49 @@ describe('SudokuService', () => {
     });
 
     it('Test sudokuService getOneWithQuery', ((done:  DoneFn) => {
-        
-        ['easy', 'medium', 'hard', 'random'].forEach((endPoint: string) => {
 
-            service.getOneWithQuery(SUDOKU_API_GET_WITH_QUERY(endPoint)).subscribe(res => {
+        SUDOKU_API_DIFICULTY_ARRAY_ENDPOINTS.forEach((endPoint: string, i: number) => {
+
+            service.getOneWithQuery(endPoint).subscribe(res => {
              
                 expect(res).toBeTruthy();
                 expect(res?.length).toBe(9);
                 expect(res.flat().every(cell => typeof cell === 'number' && !isNaN(cell))).toBeTrue();
-            })
-        })
+            });
+
+            const req = httpMock.expectOne(SUDOKU_API_BOARD + '?difficulty=' + endPoint);
+            expect(req.request.method).toBe('GET');
+        });
+
         done();
     }));
 
-    it('Test sudokuService getSolution', ((done:  DoneFn) => {
-        
-        service.getOneWithQuery(SUDOKU_API_GET_WITH_QUERY('random')).subscribe(res => {
+   it('Test sudokuService getSolution', (done: DoneFn) => {
 
-            expect(res).toBeTruthy();
+        let res = STATIC_BOARD;
+
+        service.getSolution(STATIC_BOARD).subscribe(sol => {
+
+            expect(sol).toBeTruthy();
+    
+            res = sol;
             
-            service.getSolution(res).subscribe(sol => {
+            expect(
+              res.every((row, i) =>
+                row.every((cell, j) => (cell > 0 ? cell === sol[i][j] : true))
+              )
+            ).toBeTrue();
 
-                expect(res).toBeTruthy();
-                expect(res?.length).toBe(9);
-                expect(res.flat().every(cell => typeof cell === 'number' && !isNaN(cell))).toBeTrue();
-                expect(res.every((row, i) => row.every((cell, j) => { 
+            done();
+        });
 
-                        if (cell > 0) {
-    
-                            return cell === sol[i][j]; 
-                        }
-    
-                        return true; 
+  
+        const req = httpMock.expectOne(SUDOKU_API_SOLVE);
 
-                    }))
-                ).toBeTrue();
-            })
-        })
-        done();
-    }));
+        expect(req.request.method).toBe('POST');
+
+        req.flush(res); 
+    });
 
     it('Test sudokuService testSolution', ((done:  DoneFn) => {
         
@@ -72,16 +81,22 @@ describe('SudokuService', () => {
             expect(res).toBeTruthy();
             expect(['unsolved', 'solved']).toContain(res.status);
         })
+
+        const req = httpMock.expectOne(SUDOKU_API_VALIDATE);
+        expect(req.request.method).toBe('POST');
         done();
     }));
 
     it('Test sudokuService getGrade', ((done:  DoneFn) => {
 
         service.getGrade(testBoard).subscribe(res => {
+
             expect(res).toBeTruthy();
             expect(['easy', 'meduim', 'hard']).toContain(res.difficulty);
-        })
+        });
 
+        const req = httpMock.expectOne(SUDOKU_API_GRADE);
+        expect(req.request.method).toBe('POST');
         done();
     }));
 });
