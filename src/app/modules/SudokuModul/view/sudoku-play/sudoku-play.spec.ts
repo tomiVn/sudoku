@@ -101,6 +101,8 @@ describe('SudokuPlay', () => {
 
         component.clearBoard();
 
+        fixture.detectChanges();
+
         expect(component.board.every((row) => row.every((cell) => cell == 0))).toBeTrue();
     }));
 
@@ -109,6 +111,8 @@ describe('SudokuPlay', () => {
        component.board = testBoard;
 
         component.solveAction();
+
+        fixture.detectChanges();
 
         tick(60000);
 
@@ -120,6 +124,8 @@ describe('SudokuPlay', () => {
        component.board = testBoard;
 
         component.testSolution();
+
+        fixture.detectChanges();
 
         tick(60000);
 
