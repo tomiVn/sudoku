@@ -1,17 +1,19 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { SudokuPlay, type SudokuStatus } from './sudoku-play';
+import { SudokuPlay } from './sudoku-play';
 import { SudokuService } from '../../services/sudoku-service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { getLockedFn } from '../../utils/methods/locked';
 import { DIFFICULTY_LEVELS_ARRAY } from '../../utils/constants/difficulty.levels';
+import { getBoardWithValueFn } from '../../utils/methods/get.board';
+import { STATIC_BOARD } from '../../utils/constants/static.board';
 
 describe('SudokuPlay', () => {
 
     let component:         SudokuPlay;
     let fixture:           ComponentFixture<SudokuPlay>;
     let sudokuService:     SudokuService;
-    let testBoard:         number[][]       = Array.from({ length: 9 }, () => Array(9).fill(0));
+    let testBoard:         number[][]       = STATIC_BOARD;
     
     beforeAll(() => {
         //jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000; // 2 minutes
@@ -87,7 +89,7 @@ describe('SudokuPlay', () => {
 
     it('Test onInputChange locked value not Succes', (() => {
 
-        component.board = Array.from({ length: 9 }, () => Array(9).fill(1));
+        component.board  = getBoardWithValueFn(1);
         component.locked = getLockedFn(component.board);
         component.onInputChange('2', 0, 0);
         expect(component.board[0][0]).not.toBe(2);
@@ -95,7 +97,7 @@ describe('SudokuPlay', () => {
 
     it('Test clearBoard Succes', (() => {
 
-        component.board = Array.from({ length: 9 }, () => Array(9).fill(1));
+        component.board = getBoardWithValueFn(1);
 
         component.clearBoard();
 
@@ -160,6 +162,5 @@ describe('SudokuPlay', () => {
         }, 120000);
 
         done();
-        
     }));
 });

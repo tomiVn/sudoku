@@ -1,18 +1,16 @@
 import { TestBed } from '@angular/core/testing';
-
 import { SudokuService } from './sudoku-service';
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { SUDOKU_API_DIFICULTY_ARRAY_ENDPOINTS, SUDOKU_API_BOARD, SUDOKU_API_GRADE, SUDOKU_API_SOLVE, SUDOKU_API_VALIDATE } from '../utils/urls/sudoku.api';
-import { getHttpQuery } from '../utils/methods/get.query';
 import { STATIC_BOARD } from '../utils/constants/static.board';
+import { getBoardWithValueFn } from '../utils/methods/get.board';
 
 describe('SudokuService', () => {
 
-    let service: SudokuService;
-    let testBoard: number[][] = Array.from({ length: 9 }, () => Array(9).fill(1));
-
-    let httpMock: HttpTestingController;
+    let service:   SudokuService;
+    let testBoard: number[][]             = getBoardWithValueFn(1);
+    let httpMock:  HttpTestingController;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -22,7 +20,7 @@ describe('SudokuService', () => {
                 provideHttpClientTesting(),
             ]
         });
-        service = TestBed.inject(SudokuService);
+        service  = TestBed.inject(SudokuService);
         httpMock = TestBed.inject(HttpTestingController);
     });
 
@@ -48,31 +46,50 @@ describe('SudokuService', () => {
         done();
     }));
 
-   it('Test sudokuService getSolution', (done: DoneFn) => {
-
+   it('Test sudokuService getSolution Success', (done: DoneFn) => {
+  
         let res = STATIC_BOARD;
 
         service.getSolution(STATIC_BOARD).subscribe(sol => {
-
-            expect(sol).toBeTruthy();
     
-            res = sol;
-            
-            expect(
-              res.every((row, i) =>
-                row.every((cell, j) => (cell > 0 ? cell === sol[i][j] : true))
-              )
-            ).toBeTrue();
+            expect(sol).toBeTruthy();
+            expect(sol.solution).toBeTruthy();
+    
+            res = sol.solution;
 
+            expect(STATIC_BOARD.every((row, i) => row.every((cell, j) =>
+                cell > 0 ? cell === sol.solution[i][j] : true ))).toBeTrue();
+    
             done();
         });
 
-  
         const req = httpMock.expectOne(SUDOKU_API_SOLVE);
-
         expect(req.request.method).toBe('POST');
+    
+        req.flush({ solution: res });
+    });
 
-        req.flush(res); 
+    it('Test sudokuService getSolution Error', (done: DoneFn) => {
+  
+        let res = STATIC_BOARD;
+
+        service.getSolution(STATIC_BOARD).subscribe(sol => {
+    
+            expect(sol).toBeTruthy();
+            expect(sol.solution).toBeTruthy();
+    
+            res = sol.solution;
+
+            expect(STATIC_BOARD.every((row, i) => row.every((cell, j) =>
+                cell > 0 ? cell === sol.solution[i][j] : true ))).toBeFalse();
+    
+            done();
+        });
+
+        const req = httpMock.expectOne(SUDOKU_API_SOLVE);
+        expect(req.request.method).toBe('POST');
+    
+        req.flush({ solution: getBoardWithValueFn(1) });
     });
 
     it('Test sudokuService testSolution', ((done:  DoneFn) => {

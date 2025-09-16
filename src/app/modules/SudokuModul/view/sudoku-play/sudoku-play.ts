@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { getLockedFn } from '../../utils/methods/locked';
 import type { IDificulty } from '../../interfaces/dificulty';
+import { getBoardWithValueFn } from '../../utils/methods/get.board';
 
 export type SudokuStatus = 'solved' | 'broken' | 'unsolved';
 
@@ -51,7 +52,7 @@ export class SudokuPlay implements OnInit, OnDestroy{
     
     clearBoard    = () => {
 
-        this.board  = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+        this.board  = getBoardWithValueFn(0);
         this.locked = getLockedFn(this.board);
     }
         
